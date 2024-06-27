@@ -1,1 +1,1 @@
-# amartha_coding_test
+# Amartha Coding Test
