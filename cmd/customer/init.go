@@ -8,7 +8,7 @@ import (
 	httpAdmin "github.com/fadlinux/amartha_coding_test/internal/delivery/customer/http"
 	customerRepo "github.com/fadlinux/amartha_coding_test/internal/repository/customer"
 
-	mysqlCustomerRepository "flip.id/internal/repository/customer/mysql"
+	mysqlCustomerRepository "github.com/fadlinux/amartha_coding_test/internal/repository/customer/mysql"
 
 	mysql "github.com/fadlinux/amartha_coding_test/common/mysql"
 	uCustomer "github.com/fadlinux/amartha_coding_test/internal/usecase/customer"
