@@ -1,0 +1,7 @@
+{
+    "config-db": {
+      "data": {
+        "mysql_db": "root@tcp(localhost:3306)/amartha"
+      }
+    }
+  }
