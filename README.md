@@ -2,7 +2,7 @@
 
 
 
-##How To run
+## How To run
 
 1. Run docker-compose
 
@@ -20,7 +20,7 @@ docker compose down --volumes
 ```
 
 
-##Import Postman Collection
+## Import Postman Collection
 
 ```
 Amartha_postman_collection.json

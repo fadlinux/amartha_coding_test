@@ -2,8 +2,8 @@ package customer
 
 import (
 	"database/sql"
-
-	configCmd "github.com/fadlinux/amartha_coding_test/cmd/config"
+	"fmt"
+	"os"
 
 	httpAdmin "github.com/fadlinux/amartha_coding_test/internal/delivery/customer/http"
 	customerRepo "github.com/fadlinux/amartha_coding_test/internal/repository/customer"
@@ -26,7 +26,15 @@ var (
 )
 
 func Initialize() {
-	mySqlDB = mysql.NewDBConnection("mysql", configCmd.MysqlDBConnection)
+	dbUser := os.Getenv("MYSQL_USER")
+	dbPassword := os.Getenv("MYSQL_PASSWORD")
+	dbHost := os.Getenv("MYSQL_HOST") //if not run by pass to "172.31.0.2"
+	dbPort := os.Getenv("MYSQL_PORT")
+	dbName := os.Getenv("MYSQL_DB")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+	mySqlDB = mysql.NewDBConnection("mysql", dsn)
+
+	//	mySqlDB = mysql.NewDBConnection("mysql", configCmd.MysqlDBConnection)
 	mysqlCustomerRepo = mysqlCustomerRepository.NewMySQLCustomerRepo(mySqlDB)
 
 	customerUsecase = uCustomer.NewCustomerUsecase(mysqlCustomerRepo)
