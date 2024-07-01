@@ -8,7 +8,7 @@ import (
 )
 
 func (ar *mySqlLoanRepo) AddLoan(ctx context.Context, req mLoan.AddLoanRequest) (lastID int64, err error) {
-	res, err := addStmt.Exec(req.CifID, req.InterestRate, req.TotalAmount, req.TotalWeeks, req.Status)
+	res, err := addStmt.Exec(req.CifID, req.TotalAmount, req.TotalWeeks, req.InterestRate, req.Status, req.WeeklyPayment)
 
 	if err != nil {
 		log.Println("Repository AddLoan error", err)

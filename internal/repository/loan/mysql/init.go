@@ -20,6 +20,7 @@ func NewMySQLLoanRepo(Conn *sql.DB) rLoan.Repository {
 	repo.prepareAddLoansStmt()
 	repo.prepareUpdateLoansStmt()
 	repo.prepareGetExistCustomerByCifID()
+	repo.prepareGetLoanByLoanId()
 
 	return repo
 }

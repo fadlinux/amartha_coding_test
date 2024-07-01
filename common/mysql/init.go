@@ -19,10 +19,10 @@ func NewDBConnection(driver, host string) (conn *sql.DB) {
 		panic(err.Error())
 	}
 
-	err = conn.Ping()
-	if err != nil {
-		log.Fatalln(`can't ping db:`, err)
-	}
+	// err = conn.Ping()
+	// if err != nil {
+	// 	log.Fatalln(`can't ping db:`, err)
+	// }
 
 	return
 }

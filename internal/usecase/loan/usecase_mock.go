@@ -25,6 +25,9 @@ var _ Usecase = &UsecaseMock{}
 //			GetExistCifIdFunc: func(ctx context.Context, cifId int64) (bool, error) {
 //				panic("mock out the GetExistCifId method")
 //			},
+//			GetLoanByLoanIdFunc: func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error) {
+//				panic("mock out the GetLoanByLoanId method")
+//			},
 //		}
 //
 //		// use mockedUsecase in code that requires Usecase
@@ -37,6 +40,9 @@ type UsecaseMock struct {
 
 	// GetExistCifIdFunc mocks the GetExistCifId method.
 	GetExistCifIdFunc func(ctx context.Context, cifId int64) (bool, error)
+
+	// GetLoanByLoanIdFunc mocks the GetLoanByLoanId method.
+	GetLoanByLoanIdFunc func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -54,9 +60,17 @@ type UsecaseMock struct {
 			// CifId is the cifId argument value.
 			CifId int64
 		}
+		// GetLoanByLoanId holds details about calls to the GetLoanByLoanId method.
+		GetLoanByLoanId []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoanId is the loanId argument value.
+			LoanId int64
+		}
 	}
-	lockAddLoan       sync.RWMutex
-	lockGetExistCifId sync.RWMutex
+	lockAddLoan         sync.RWMutex
+	lockGetExistCifId   sync.RWMutex
+	lockGetLoanByLoanId sync.RWMutex
 }
 
 // AddLoan calls AddLoanFunc.
@@ -128,5 +142,41 @@ func (mock *UsecaseMock) GetExistCifIdCalls() []struct {
 	mock.lockGetExistCifId.RLock()
 	calls = mock.calls.GetExistCifId
 	mock.lockGetExistCifId.RUnlock()
+	return calls
+}
+
+// GetLoanByLoanId calls GetLoanByLoanIdFunc.
+func (mock *UsecaseMock) GetLoanByLoanId(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error) {
+	if mock.GetLoanByLoanIdFunc == nil {
+		panic("UsecaseMock.GetLoanByLoanIdFunc: method is nil but Usecase.GetLoanByLoanId was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		LoanId int64
+	}{
+		Ctx:    ctx,
+		LoanId: loanId,
+	}
+	mock.lockGetLoanByLoanId.Lock()
+	mock.calls.GetLoanByLoanId = append(mock.calls.GetLoanByLoanId, callInfo)
+	mock.lockGetLoanByLoanId.Unlock()
+	return mock.GetLoanByLoanIdFunc(ctx, loanId)
+}
+
+// GetLoanByLoanIdCalls gets all the calls that were made to GetLoanByLoanId.
+// Check the length with:
+//
+//	len(mockedUsecase.GetLoanByLoanIdCalls())
+func (mock *UsecaseMock) GetLoanByLoanIdCalls() []struct {
+	Ctx    context.Context
+	LoanId int64
+} {
+	var calls []struct {
+		Ctx    context.Context
+		LoanId int64
+	}
+	mock.lockGetLoanByLoanId.RLock()
+	calls = mock.calls.GetLoanByLoanId
+	mock.lockGetLoanByLoanId.RUnlock()
 	return calls
 }

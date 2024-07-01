@@ -7,6 +7,7 @@ import (
 
 	customerCmd "github.com/fadlinux/amartha_coding_test/cmd/customer"
 	loanCMD "github.com/fadlinux/amartha_coding_test/cmd/loan"
+	paymentCMD "github.com/fadlinux/amartha_coding_test/cmd/payment"
 
 	cHttp "github.com/fadlinux/amartha_coding_test/common/http"
 	"github.com/julienschmidt/httprouter"
@@ -17,6 +18,7 @@ func initModule() {
 	configCmd.Initialize()
 	customerCmd.Initialize()
 	loanCMD.Initialize()
+	paymentCMD.Initialize()
 }
 
 func main() {
@@ -35,10 +37,16 @@ func initRoute(router *httprouter.Router) {
 	router.PUT("/customer", customerCmd.HTTPDelivery.HandleUpdateCustomer)
 
 	router.POST("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
+
+	//update loans for delinquent if any
+	router.PUT("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
+
 	//router.GET("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
 
 	//update deliciant IsDelinquent
 	//make payment
+	router.POST("/payment", paymentCMD.HTTPDelivery.HandleAddPayment)
+
 }
 
 func healthcheck(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {

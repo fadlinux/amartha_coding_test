@@ -2,17 +2,15 @@ package loan
 
 import (
 	"database/sql"
-	"fmt"
-	"os"
+
+	configCmd "github.com/fadlinux/amartha_coding_test/cmd/config"
 
 	httpAdmin "github.com/fadlinux/amartha_coding_test/internal/delivery/loan/http"
+	customerRepo "github.com/fadlinux/amartha_coding_test/internal/repository/customer"
 	loanRepo "github.com/fadlinux/amartha_coding_test/internal/repository/loan"
 
-	mysqlLoanRepository "github.com/fadlinux/amartha_coding_test/internal/repository/loan/mysql"
-
-	customerRepo "github.com/fadlinux/amartha_coding_test/internal/repository/customer"
-
 	mysqlCustomerRepository "github.com/fadlinux/amartha_coding_test/internal/repository/customer/mysql"
+	mysqlLoanRepository "github.com/fadlinux/amartha_coding_test/internal/repository/loan/mysql"
 
 	mysql "github.com/fadlinux/amartha_coding_test/common/mysql"
 	uCustomer "github.com/fadlinux/amartha_coding_test/internal/usecase/customer"
@@ -25,23 +23,14 @@ var (
 	mysqlloanRepo loanRepo.Repository
 	loanUsecase   uLoan.Usecase
 
-	customerUsecase   uCustomer.Usecase
 	mysqlCustomerRepo customerRepo.Repository
-
+	customerUsecase   uCustomer.Usecase
+	//HTTPDelivery http handler loan
 	HTTPDelivery httpAdmin.Delivery
 )
 
 func Initialize() {
-	dbUser := os.Getenv("MYSQL_USER")
-	dbPassword := os.Getenv("MYSQL_PASSWORD")
-	dbHost := os.Getenv("MYSQL_HOST")
-	dbPort := os.Getenv("MYSQL_PORT")
-	dbName := os.Getenv("MYSQL_DB")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
-
-	mySqlDB = mysql.NewDBConnection("mysql", dsn)
-
-	//mySqlDB = mysql.NewDBConnection("mysql", configCmd.MysqlDBConnection)
+	mySqlDB = mysql.NewDBConnection("mysql", configCmd.MysqlDBConnection)
 	mysqlloanRepo = mysqlLoanRepository.NewMySQLLoanRepo(mySqlDB)
 	loanUsecase = uLoan.NewLoanUsecase(mysqlloanRepo)
 

@@ -3,6 +3,8 @@ package loan
 import (
 	"context"
 	"log"
+
+	mLoan "github.com/fadlinux/amartha_coding_test/internal/model/loan"
 )
 
 func (uc *loanUsecase) GetExistCifId(ctx context.Context, cifId int64) (exist bool, err error) {
@@ -18,4 +20,14 @@ func (uc *loanUsecase) GetExistCifId(ctx context.Context, cifId int64) (exist bo
 	}
 
 	return
+}
+
+func (uc *loanUsecase) GetLoanByLoanId(ctx context.Context, loanId int64) (data mLoan.AddLoanRequest, err error) {
+	data, err = uc.mysqlLoanRepo.FetchLoanId(ctx, loanId)
+	if err != nil {
+		log.Println("Usecase GetLoanByLoanId error :", err)
+	}
+
+	return
+
 }

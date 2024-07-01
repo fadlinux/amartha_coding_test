@@ -32,7 +32,7 @@ func (ar *mySqlCustomerRepo) prepareGetExistCustomerByCifID() {
 	var err error
 	getExistCustomerByCifID, err = ar.conn.Prepare("SELECT COUNT(cif_id) AS total FROM customer WHERE cif_id = ? ")
 	if err != nil {
-		log.Fatal("[User MySQL Repo: prepareGetByCifID] Prepare statement fail :", err)
+		log.Fatal("[User MySQL Repo: prepareGetExistCustomerByCifID] Prepare statement fail :", err)
 	}
 }
 

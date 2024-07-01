@@ -25,6 +25,9 @@ var _ Repository = &RepositoryMock{}
 //			FetchByCifIdFunc: func(ctx context.Context, cifId int64) (int64, error) {
 //				panic("mock out the FetchByCifId method")
 //			},
+//			FetchLoanIdFunc: func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error) {
+//				panic("mock out the FetchLoanId method")
+//			},
 //			UpdateLoanFunc: func(ctx context.Context, cifId int64, req mLoan.AddLoanRequest) error {
 //				panic("mock out the UpdateLoan method")
 //			},
@@ -40,6 +43,9 @@ type RepositoryMock struct {
 
 	// FetchByCifIdFunc mocks the FetchByCifId method.
 	FetchByCifIdFunc func(ctx context.Context, cifId int64) (int64, error)
+
+	// FetchLoanIdFunc mocks the FetchLoanId method.
+	FetchLoanIdFunc func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error)
 
 	// UpdateLoanFunc mocks the UpdateLoan method.
 	UpdateLoanFunc func(ctx context.Context, cifId int64, req mLoan.AddLoanRequest) error
@@ -60,6 +66,13 @@ type RepositoryMock struct {
 			// CifId is the cifId argument value.
 			CifId int64
 		}
+		// FetchLoanId holds details about calls to the FetchLoanId method.
+		FetchLoanId []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoanId is the loanId argument value.
+			LoanId int64
+		}
 		// UpdateLoan holds details about calls to the UpdateLoan method.
 		UpdateLoan []struct {
 			// Ctx is the ctx argument value.
@@ -72,6 +85,7 @@ type RepositoryMock struct {
 	}
 	lockAddLoan      sync.RWMutex
 	lockFetchByCifId sync.RWMutex
+	lockFetchLoanId  sync.RWMutex
 	lockUpdateLoan   sync.RWMutex
 }
 
@@ -144,6 +158,42 @@ func (mock *RepositoryMock) FetchByCifIdCalls() []struct {
 	mock.lockFetchByCifId.RLock()
 	calls = mock.calls.FetchByCifId
 	mock.lockFetchByCifId.RUnlock()
+	return calls
+}
+
+// FetchLoanId calls FetchLoanIdFunc.
+func (mock *RepositoryMock) FetchLoanId(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error) {
+	if mock.FetchLoanIdFunc == nil {
+		panic("RepositoryMock.FetchLoanIdFunc: method is nil but Repository.FetchLoanId was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		LoanId int64
+	}{
+		Ctx:    ctx,
+		LoanId: loanId,
+	}
+	mock.lockFetchLoanId.Lock()
+	mock.calls.FetchLoanId = append(mock.calls.FetchLoanId, callInfo)
+	mock.lockFetchLoanId.Unlock()
+	return mock.FetchLoanIdFunc(ctx, loanId)
+}
+
+// FetchLoanIdCalls gets all the calls that were made to FetchLoanId.
+// Check the length with:
+//
+//	len(mockedRepository.FetchLoanIdCalls())
+func (mock *RepositoryMock) FetchLoanIdCalls() []struct {
+	Ctx    context.Context
+	LoanId int64
+} {
+	var calls []struct {
+		Ctx    context.Context
+		LoanId int64
+	}
+	mock.lockFetchLoanId.RLock()
+	calls = mock.calls.FetchLoanId
+	mock.lockFetchLoanId.RUnlock()
 	return calls
 }
 

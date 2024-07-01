@@ -22,12 +22,6 @@ func (d Delivery) HandleAddLoan(w http.ResponseWriter, req *http.Request, params
 	totalWeeks, _ := strconv.ParseInt(req.FormValue("total_weeks"), 10, 64)
 
 	cifIdStr := strconv.Itoa(int(cifId))
-	reqData := mLoan.AddLoanRequest{
-		CifID:        cifIdStr,
-		TotalAmount:  totalAmount,
-		InterestRate: interestRate,
-		TotalWeeks:   totalWeeks,
-	}
 
 	if cifId == 0 {
 		statusCode = http.StatusBadRequest
@@ -41,26 +35,42 @@ func (d Delivery) HandleAddLoan(w http.ResponseWriter, req *http.Request, params
 			result.Message = "error on HandleAddLoan "
 		}
 		if exist {
+
+			//Assumption : check duplicate CIF ID as customer id only 1 submit loan
 			checkDuplicate, _ := d.loanUC.GetExistCifId(context.Background(), cifId)
 			if !checkDuplicate {
-				dataCustomer, _ := d.customerUC.GetCustomer(context.Background(), cifId)
-				LoanID, _ := d.loanUC.AddLoan(context.Background(), reqData)
-
-				result.LoanID = strconv.FormatInt(LoanID, 10)
-				result.CustomerData = mLoan.CustomerData{
-					FullName: dataCustomer.Fullname,
-					KTP:      dataCustomer.KTP,
-					Address:  dataCustomer.Address,
-				}
-
 				outStanding := totalAmount + ((totalAmount * interestRate) / 100)
+				weeksPayment := make([]float64, totalWeeks) //set how many week for installment term
+				weeklyPayment := float32(outStanding / totalWeeks)
+
+				//Assumption : create new one loans status is open, close if paid off all payment
+				status := "Open"
 				result.Loan = mLoan.LoanResponse{
 					TotalAmount:   totalAmount,
 					InterestRate:  interestRate,
 					OutStanding:   outStanding,
 					TotalWeeks:    totalWeeks,
-					WeeklyPayment: float32(outStanding / totalWeeks),
-					Status:        "Open",
+					WeeklyPayment: weeklyPayment,
+					WeeksPayment:  weeksPayment,
+					Status:        status,
+				}
+
+				reqData := mLoan.AddLoanRequest{
+					CifID:         cifIdStr,
+					TotalAmount:   totalAmount,
+					InterestRate:  interestRate,
+					TotalWeeks:    totalWeeks,
+					WeeklyPayment: weeklyPayment,
+					Status:        status,
+				}
+				LoanID, _ := d.loanUC.AddLoan(context.Background(), reqData)
+
+				dataCustomer, _ := d.customerUC.GetCustomer(context.Background(), cifId)
+				result.LoanID = strconv.FormatInt(LoanID, 10)
+				result.CustomerData = mLoan.CustomerData{
+					FullName: dataCustomer.Fullname,
+					KTP:      dataCustomer.KTP,
+					Address:  dataCustomer.Address,
 				}
 
 				statusCode = http.StatusForbidden
@@ -78,37 +88,6 @@ func (d Delivery) HandleAddLoan(w http.ResponseWriter, req *http.Request, params
 
 	cHttp.RenderHTTPJSON(w, result, statusCode, req.FormValue("callback"))
 }
-
-// func (d Delivery) HandleUpdateLoan(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-// 	var result mLoan.AddLoanResponse
-// 	statusCode := http.StatusCreated
-
-// 	cidId, _ := strconv.ParseInt(req.FormValue("cif_id"), 10, 64)
-// 	fullname := req.FormValue("fullname")
-// 	ktpNo := req.FormValue("ktp_no")
-// 	address := req.FormValue("address")
-
-// 	reqData := mLoan.AddLoanRequest{
-// 		Fullname: fullname,
-// 		KTP:      ktpNo,
-// 		Address:  address,
-// 	}
-
-// 	if cidId == 0 || fullname == "" {
-// 		statusCode = http.StatusBadRequest
-// 		result.Message = "Bad Request"
-// 	} else {
-
-// 		err := d.loanUC.UpdateLoan(context.Background(), cidId, reqData)
-// 		if err != nil {
-// 			result.Message = "Update loan error, please check your data"
-// 		} else {
-// 			result.Message = "Update loan successfully"
-// 		}
-// 	}
-
-// 	cHttp.RenderHTTPJSON(w, result, statusCode, req.FormValue("callback"))
-// }
 
 // OptionHandler set http option
 func (d Delivery) OptionHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
