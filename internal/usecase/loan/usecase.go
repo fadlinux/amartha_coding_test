@@ -11,4 +11,5 @@ type Usecase interface {
 	AddLoan(ctx context.Context, request mLoan.AddLoanRequest) (lastID int64, err error)
 	GetExistCifId(ctx context.Context, cifId int64) (exit bool, err error)
 	GetLoanByLoanId(ctx context.Context, loanId int64) (data mLoan.AddLoanRequest, err error)
+	UpdateLoan(ctx context.Context, loanId int64, delinquent int) (err error)
 }

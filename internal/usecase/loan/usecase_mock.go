@@ -28,6 +28,9 @@ var _ Usecase = &UsecaseMock{}
 //			GetLoanByLoanIdFunc: func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error) {
 //				panic("mock out the GetLoanByLoanId method")
 //			},
+//			UpdateLoanFunc: func(ctx context.Context, loanId int64, delinquent int) error {
+//				panic("mock out the UpdateLoan method")
+//			},
 //		}
 //
 //		// use mockedUsecase in code that requires Usecase
@@ -43,6 +46,9 @@ type UsecaseMock struct {
 
 	// GetLoanByLoanIdFunc mocks the GetLoanByLoanId method.
 	GetLoanByLoanIdFunc func(ctx context.Context, loanId int64) (mLoan.AddLoanRequest, error)
+
+	// UpdateLoanFunc mocks the UpdateLoan method.
+	UpdateLoanFunc func(ctx context.Context, loanId int64, delinquent int) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -67,10 +73,20 @@ type UsecaseMock struct {
 			// LoanId is the loanId argument value.
 			LoanId int64
 		}
+		// UpdateLoan holds details about calls to the UpdateLoan method.
+		UpdateLoan []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoanId is the loanId argument value.
+			LoanId int64
+			// Delinquent is the delinquent argument value.
+			Delinquent int
+		}
 	}
 	lockAddLoan         sync.RWMutex
 	lockGetExistCifId   sync.RWMutex
 	lockGetLoanByLoanId sync.RWMutex
+	lockUpdateLoan      sync.RWMutex
 }
 
 // AddLoan calls AddLoanFunc.
@@ -178,5 +194,45 @@ func (mock *UsecaseMock) GetLoanByLoanIdCalls() []struct {
 	mock.lockGetLoanByLoanId.RLock()
 	calls = mock.calls.GetLoanByLoanId
 	mock.lockGetLoanByLoanId.RUnlock()
+	return calls
+}
+
+// UpdateLoan calls UpdateLoanFunc.
+func (mock *UsecaseMock) UpdateLoan(ctx context.Context, loanId int64, delinquent int) error {
+	if mock.UpdateLoanFunc == nil {
+		panic("UsecaseMock.UpdateLoanFunc: method is nil but Usecase.UpdateLoan was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		LoanId     int64
+		Delinquent int
+	}{
+		Ctx:        ctx,
+		LoanId:     loanId,
+		Delinquent: delinquent,
+	}
+	mock.lockUpdateLoan.Lock()
+	mock.calls.UpdateLoan = append(mock.calls.UpdateLoan, callInfo)
+	mock.lockUpdateLoan.Unlock()
+	return mock.UpdateLoanFunc(ctx, loanId, delinquent)
+}
+
+// UpdateLoanCalls gets all the calls that were made to UpdateLoan.
+// Check the length with:
+//
+//	len(mockedUsecase.UpdateLoanCalls())
+func (mock *UsecaseMock) UpdateLoanCalls() []struct {
+	Ctx        context.Context
+	LoanId     int64
+	Delinquent int
+} {
+	var calls []struct {
+		Ctx        context.Context
+		LoanId     int64
+		Delinquent int
+	}
+	mock.lockUpdateLoan.RLock()
+	calls = mock.calls.UpdateLoan
+	mock.lockUpdateLoan.RUnlock()
 	return calls
 }

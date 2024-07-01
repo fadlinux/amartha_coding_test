@@ -24,8 +24,8 @@ func (ar *mySqlLoanRepo) AddLoan(ctx context.Context, req mLoan.AddLoanRequest) 
 	return
 }
 
-func (ar *mySqlLoanRepo) UpdateLoan(ctx context.Context, cifId int64, req mLoan.AddLoanRequest) (err error) {
-	rows, err := updateStmt.Query(req.CifID, req.InterestRate, req.TotalAmount, req.TotalWeeks)
+func (ar *mySqlLoanRepo) UpdateLoan(ctx context.Context, loan_id int64, delinquent int) (err error) {
+	rows, err := updateStmt.Query(delinquent, loan_id)
 
 	if err != nil {
 		log.Println("Repository UpdateLoan error", err)

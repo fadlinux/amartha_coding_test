@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	mPayment "github.com/fadlinux/amartha_coding_test/internal/model/payment"
@@ -21,9 +20,6 @@ func (ar *mySqlPaymentRepo) GetId(ctx context.Context, loanId int64) (data []mPa
 		rows.Scan(
 			&item.Amount,
 		)
-
-		fmt.Println("item Amount :", item.Amount)
-
 		data = append(data, item)
 	}
 	return

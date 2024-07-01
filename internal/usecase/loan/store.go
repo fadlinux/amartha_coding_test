@@ -16,8 +16,8 @@ func (uc *loanUsecase) AddLoan(ctx context.Context, request mLoan.AddLoanRequest
 	return
 }
 
-func (uc *loanUsecase) UpdateLoan(ctx context.Context, cifId int64, request mLoan.AddLoanRequest) (err error) {
-	err = uc.mysqlLoanRepo.UpdateLoan(ctx, cifId, request)
+func (uc *loanUsecase) UpdateLoan(ctx context.Context, loanId int64, delinquent int) (err error) {
+	err = uc.mysqlLoanRepo.UpdateLoan(ctx, loanId, delinquent)
 	if err != nil {
 		log.Println("Usecase UpdateLoan error :", err)
 	}

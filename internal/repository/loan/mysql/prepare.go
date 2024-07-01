@@ -22,7 +22,7 @@ func (ar *mySqlLoanRepo) prepareAddLoansStmt() {
 
 func (ar *mySqlLoanRepo) prepareUpdateLoansStmt() {
 	var err error
-	updateStmt, err = ar.conn.Prepare("UPDATE loans SET total_amount = ?, total_weeks = ?, interest_rate = ? WHERE cif_id = ? ")
+	updateStmt, err = ar.conn.Prepare("UPDATE loans SET delinquent = ? WHERE loan_id = ? ")
 	if err != nil {
 		log.Fatal("[User MySQL Repo: prepareUpdateLoansStmt] Prepare statement fail :", err)
 	}

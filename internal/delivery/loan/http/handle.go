@@ -89,6 +89,17 @@ func (d Delivery) HandleAddLoan(w http.ResponseWriter, req *http.Request, params
 	cHttp.RenderHTTPJSON(w, result, statusCode, req.FormValue("callback"))
 }
 
+func (d Delivery) HandleUpdateLoan(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	var result mLoan.AddLoanResponse
+	statusCode := http.StatusCreated
+
+	delinquent, _ := strconv.Atoi(req.FormValue("delinquent"))
+	loan_id, _ := strconv.ParseInt(req.FormValue("loan_id"), 0, 64)
+	d.loanUC.UpdateLoan(context.Background(), loan_id, delinquent)
+
+	cHttp.RenderHTTPJSON(w, result, statusCode, req.FormValue("callback"))
+}
+
 // OptionHandler set http option
 func (d Delivery) OptionHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
