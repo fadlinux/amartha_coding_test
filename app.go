@@ -3,13 +3,20 @@ package main
 import (
 	"net/http"
 
+	configCmd "github.com/fadlinux/amartha_coding_test/cmd/config"
+
+	customerCmd "github.com/fadlinux/amartha_coding_test/cmd/customer"
+	loanCMD "github.com/fadlinux/amartha_coding_test/cmd/loan"
+
 	cHttp "github.com/fadlinux/amartha_coding_test/common/http"
 	"github.com/julienschmidt/httprouter"
 	"gopkg.in/paytm/grace.v1"
 )
 
 func initModule() {
-
+	configCmd.Initialize()
+	customerCmd.Initialize()
+	loanCMD.Initialize()
 }
 
 func main() {
@@ -24,6 +31,14 @@ func initRoute(router *httprouter.Router) {
 	router.HEAD("/healthcheck", healthcheck)
 	router.GET("/healthcheck", healthcheck)
 
+	router.POST("/customer", customerCmd.HTTPDelivery.HandleAddCustomer)
+	router.PUT("/customer", customerCmd.HTTPDelivery.HandleUpdateCustomer)
+
+	router.POST("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
+	//router.GET("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
+
+	//update deliciant IsDelinquent
+	//make payment
 }
 
 func healthcheck(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
