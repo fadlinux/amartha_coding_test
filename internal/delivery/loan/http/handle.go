@@ -90,14 +90,16 @@ func (d Delivery) HandleAddLoan(w http.ResponseWriter, req *http.Request, params
 }
 
 func (d Delivery) HandleUpdateLoan(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	var result mLoan.AddLoanResponse
+	var resp struct {
+		Message string `json:"message"`
+	}
 	statusCode := http.StatusCreated
-
 	delinquent, _ := strconv.Atoi(req.FormValue("delinquent"))
 	loan_id, _ := strconv.ParseInt(req.FormValue("loan_id"), 0, 64)
 	d.loanUC.UpdateLoan(context.Background(), loan_id, delinquent)
+	resp.Message = "Success update loans"
 
-	cHttp.RenderHTTPJSON(w, result, statusCode, req.FormValue("callback"))
+	cHttp.RenderHTTPJSON(w, resp, statusCode, req.FormValue("callback"))
 }
 
 // OptionHandler set http option

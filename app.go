@@ -36,15 +36,10 @@ func initRoute(router *httprouter.Router) {
 	router.POST("/customer", customerCmd.HTTPDelivery.HandleAddCustomer)
 	router.PUT("/customer", customerCmd.HTTPDelivery.HandleUpdateCustomer)
 
+	router.GET("/loans/", paymentCMD.HTTPDelivery.HandleGetLoan)
 	router.POST("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
+	router.PUT("/loans", loanCMD.HTTPDelivery.HandleUpdateLoan)
 
-	//update loans for delinquent if any
-	router.PUT("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
-
-	//router.GET("/loans", loanCMD.HTTPDelivery.HandleAddLoan)
-
-	//update deliciant IsDelinquent
-	//make payment
 	router.POST("/payment", paymentCMD.HTTPDelivery.HandleAddPayment)
 
 }
