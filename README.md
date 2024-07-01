@@ -4,6 +4,11 @@
 
 ## How To run
 
+```
+go mod tidy
+go mod vendor
+```
+
 1. Run docker-compose
 
 ```
