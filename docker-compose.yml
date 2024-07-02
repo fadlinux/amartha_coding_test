@@ -10,24 +10,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-#   db:
-#     image: mysql:5.1
-#     ports:
-#       - "3306:3306"
-#     environment:
-#       MYSQL_ROOT_USER: root
-#       MYSQL_ROOT_PASSWORD: example
-#       MYSQL_DATABASE: amartha
-#     expose:
-#       - 3306
-#     volumes:
-#       - db_data:/var/lib/mysql
-#       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
-
-# volumes:
-#   db_data:
-#     driver: local
-
   db:
     platform: linux/x86_64
     image: postgres:14.1-alpine
@@ -42,7 +24,7 @@ services:
       - 5432
     volumes:
       - db:/var/lib/postgresql/data
-      # Load database schema from ./database.sql
+      # Load database schema from ./database.sql #refFadlinux github
       # If you want to reload new database schema, you need to execute
       # `docker-compose down --volumes` first to remove the volume.
       - ./database.sql:/docker-entrypoint-initdb.d/database.sql
