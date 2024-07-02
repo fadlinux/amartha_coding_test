@@ -2,7 +2,6 @@ package customer
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	httpAdmin "github.com/fadlinux/amartha_coding_test/internal/delivery/customer/http"
@@ -10,13 +9,13 @@ import (
 
 	mysqlCustomerRepository "github.com/fadlinux/amartha_coding_test/internal/repository/customer/mysql"
 
-	mysql "github.com/fadlinux/amartha_coding_test/common/mysql"
+	postgre "github.com/fadlinux/amartha_coding_test/common/postgre"
 	uCustomer "github.com/fadlinux/amartha_coding_test/internal/usecase/customer"
 )
 
 var (
 	//init construct var mysql
-	mySqlDB           *sql.DB
+	postgreDb         *sql.DB
 	mysqlCustomerRepo customerRepo.Repository
 
 	customerUsecase uCustomer.Usecase
@@ -26,16 +25,10 @@ var (
 )
 
 func Initialize() {
-	dbUser := os.Getenv("MYSQL_USER")
-	dbPassword := os.Getenv("MYSQL_PASSWORD")
-	dbHost := os.Getenv("MYSQL_HOST") //if not run by pass to "172.31.0.2"
-	dbPort := os.Getenv("MYSQL_PORT")
-	dbName := os.Getenv("MYSQL_DB")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
-	mySqlDB = mysql.NewDBConnection("mysql", dsn)
+	dbDsn := os.Getenv("DATABASE_URL")
+	postgreDb = postgre.NewDBConnection("postgres", dbDsn)
 
-	//	mySqlDB = mysql.NewDBConnection("mysql", configCmd.MysqlDBConnection)
-	mysqlCustomerRepo = mysqlCustomerRepository.NewMySQLCustomerRepo(mySqlDB)
+	mysqlCustomerRepo = mysqlCustomerRepository.NewMySQLCustomerRepo(postgreDb)
 
 	customerUsecase = uCustomer.NewCustomerUsecase(mysqlCustomerRepo)
 	HTTPDelivery = httpAdmin.NewCustomerHTTP(customerUsecase)

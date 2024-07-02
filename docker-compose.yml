@@ -2,36 +2,55 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - "8080:8080"
     environment:
-      - MYSQL_HOST=db
-      - MYSQL_PORT=3306
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=example
-      - MYSQL_DB=amartha
+      DATABASE_URL: postgres://postgres:postgres@db:5432/database?sslmode=disable
     depends_on:
-      - "db"
-    links:
-      - db
+      db:
+        condition: service_healthy
+#   db:
+#     image: mysql:5.1
+#     ports:
+#       - "3306:3306"
+#     environment:
+#       MYSQL_ROOT_USER: root
+#       MYSQL_ROOT_PASSWORD: example
+#       MYSQL_DATABASE: amartha
+#     expose:
+#       - 3306
+#     volumes:
+#       - db_data:/var/lib/mysql
+#       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+
+# volumes:
+#   db_data:
+#     driver: local
 
   db:
-    image: mysql:8.0
-    ports:
-      - "3306:3306"
+    platform: linux/x86_64
+    image: postgres:14.1-alpine
+    restart: always
     environment:
-      MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: amartha
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database
+    ports:
+      - 5432:5432
     expose:
-      - 3306
+      - 5432
     volumes:
-      - db_data:/var/lib/mysql
-      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
-
+      - db:/var/lib/postgresql/data
+      # Load database schema from ./database.sql
+      # If you want to reload new database schema, you need to execute
+      # `docker-compose down --volumes` first to remove the volume.
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 volumes:
-  db_data:
+  db:
     driver: local

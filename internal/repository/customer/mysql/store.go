@@ -8,16 +8,10 @@ import (
 )
 
 func (ar *mySqlCustomerRepo) AddCustomer(ctx context.Context, req mCustomer.AddCustomerRequest) (lastID int64, err error) {
-	res, err := addStmt.Exec(req.Fullname, req.KTP, req.Address)
+	err = addStmt.QueryRow(req.Fullname, req.KTP, req.Address).Scan(&lastID)
 
 	if err != nil {
 		log.Println("Repository AddCustomer error", err)
-		return
-	}
-
-	lastID, err = res.LastInsertId()
-	if err != nil {
-		log.Println("response AddCustomer LastInsertId error : ", err)
 		return
 	}
 
